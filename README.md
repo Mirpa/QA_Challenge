@@ -15,7 +15,9 @@ I decided to write them in a table/sheet like format since that's how most of th
 
 
 I was conflicted on whether the rules should apply simultaneosly to all products, or just restrict each rule for one situation or specific product, so finally I decided to write the tests with 2 scenarios in mind:
+
 Scenario 1: All discount rules are applicable to all products simultaneously, allowing them to be stacked together. This scenario is used to test maximum complexity and edge cases.
+
 Scenario 2: Each discount rule applies to a single product. This approach represents a realistic user scenario that prevents customers from stacking discounts across multiple rules. For example:
 
 GR1 → FreeRule
