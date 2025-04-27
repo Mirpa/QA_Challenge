@@ -27,6 +27,12 @@ SR1 → ReducedPriceRule
 CF1 → FractionPriceRule
 
 
+
+ETA: Attached file is a Google Sheet. In case you have trouble opening it I'm sharing the link here as well
+
+[https://docs.google.com/spreadsheets/d/1KODiXMjrJyX8BLlcz7FRv4TaElqpIhKyq-swNrlhVDg/edit?usp=sharing](https://docs.google.com/spreadsheets/d/1KODiXMjrJyX8BLlcz7FRv4TaElqpIhKyq-swNrlhVDg/edit?usp=sharing)
+
+
 ----------------------------------------------------------------------------------
 
 Part 2: API Test Structure
