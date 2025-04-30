@@ -1,0 +1,3645 @@
+{
+	"info": {
+		"_postman_id": "f50d2df0-07a8-475b-8dde-f40d088cf277",
+		"name": "collection",
+		"description": "# 🚀 Get started here\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this template**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT request.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n ```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Scripts\" tab**\n\nAdding tests to your requests can help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/fa30ea0a-373d-4545-a668-e7b283cca343/aW1hZ2UucG5n\" alt=\"\" height=\"1530\" width=\"2162\">\n\n## 💪 Pro tips\n\n- Use folders to group related requests and organize the collection.\n    \n- Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) to verify if the API works as expected and execute workflows.\n    \n\n## 💡Related templates\n\n[API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44436134"
+	},
+	"item": [
+		{
+			"name": "Posts",
+			"item": [
+				{
+					"name": "GET All",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Response is a JSON array\", function () {",
+									"    pm.expect(Array.isArray(responseJson)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Validate properties for each array and its format\", () => {",
+									"    responseJson.forEach(post => {",
+									"        // First check if object has properties",
+									"        pm.expect(post).to.have.property('id');",
+									"        pm.expect(post).to.have.property('title');",
+									"        pm.expect(post).to.have.property('author');",
+									"        pm.expect(post).to.have.property('authorId');",
+									"        pm.expect(post).to.have.property('body');",
+									"        pm.expect(post).to.have.property('createdAt');",
+									"        // Second check for property format",
+									"        pm.expect(post.id).to.not.be.null;",
+									"        pm.expect(post.id).to.be.a('number');",
+									"        pm.expect(post.title).to.be.a('string');",
+									"        pm.expect(post.author).to.be.a('string');",
+									"        pm.expect(post.body).to.be.a('string');",
+									"        pm.expect(post.bodytrim().length).to.be.greaterThan(0);",
+									"        pm.expect(post.authorId).to.not.be.null;",
+									"        pm.expect(post.authorId).to.be.a('number');",
+									"        const date = new Date(item.createdDate);",
+									"        pm.expect(date instanceof Date && !isNaN(date)).to.be.true;",
+									"        pm.expect(date.getTime()).to.be.below(Date.now());",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/posts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts"
+							]
+						},
+						"description": "GET Posts request\n\nThis test validates correct retrieve of all posts\n\n- No request body\n    \n- Typically a sucessfull response should return a `200 OK`status, and a JSON response that's an array of the posts in the system\n    \n- Each array contains at least an id, title and author\n    \n- Ids should be unique identifier (not strings as in this case) - since we don't know exactly which format, let's suppose numbers\n    \n- Depending on caller, one could also expect each post to have a body (not only title), an authorId (currently only appear name) and a time stamp with the creation date of the post"
+					},
+					"response": []
+				},
+				{
+					"name": "GET All - By Title",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Response is a JSON array\", function () {",
+									"    pm.expect(Array.isArray(responseJson)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Validate properties for each array and its format\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    const requestBody = JSON.parse(pm.request.body.raw);",
+									"    responseJson.forEach(post => {",
+									"        // First check if object has properties",
+									"        pm.expect(post).to.have.property('id');",
+									"        pm.expect(post).to.have.property('title');",
+									"        pm.expect(post).to.have.property('author');",
+									"        pm.expect(post).to.have.property('authorId');",
+									"        pm.expect(post).to.have.property('body');",
+									"        pm.expect(post).to.have.property('createdAt');",
+									"        // Second check for property format",
+									"        pm.expect(post.id).to.not.be.null;",
+									"        pm.expect(post.id).to.be.a('number');",
+									"        pm.expect(post.title).to.be.a('string');",
+									"        // Verification that titles match",
+									"        pm.expect(post.title).to.contain(requestBody.title);",
+									"        pm.expect(post.author).to.be.a('string');",
+									"        pm.expect(post.body).to.be.a('string');",
+									"        pm.expect(post.bodytrim().length).to.be.greaterThan(0);",
+									"        pm.expect(post.authorId).to.not.be.null;",
+									"        pm.expect(post.authorId).to.be.a('number');",
+									"        const date = new Date(post.createdDate);",
+									"        pm.expect(date instanceof Date && !isNaN(date)).to.be.true;",
+									"        pm.expect(date.getTime()).to.be.below(Date.now());",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Post 1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								""
+							]
+						},
+						"description": "GET Posts request\n\nThis test validates correct retrieve of all posts under a similar title.\n\n- No request body\n    \n- Typically a sucessfull response should return a `200 OK`status, and a JSON response that's an array of the posts that had titles containing the string searched for\n    \n- Each array contains at least an id, title and author\n    \n- Ids should be unique identifier (not strings as in this case) - since we don't know exactly which format, let's suppose numbers\n    \n- Depending on caller, one could also expect each post to have a body (not only title), an authorId (currently only appear name) and a time stamp with the creation date of the post"
+					},
+					"response": []
+				},
+				{
+					"name": "GET All - By AuthorID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Response is a JSON array\", function () {",
+									"    pm.expect(Array.isArray(responseJson)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Validate properties for each array and its format\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    const requestBody = JSON.parse(pm.request.body.raw);",
+									"    responseJson.forEach(post => {",
+									"        // First check if object has properties",
+									"        pm.expect(post).to.have.property('id');",
+									"        pm.expect(post).to.have.property('title');",
+									"        pm.expect(post).to.have.property('author');",
+									"        pm.expect(post).to.have.property('authorId');",
+									"        pm.expect(post).to.have.property('body');",
+									"        pm.expect(post).to.have.property('createdAt');",
+									"        // Second check for property format",
+									"        pm.expect(post.id).to.not.be.null;",
+									"        pm.expect(post.id).to.be.a('number');",
+									"        pm.expect(post.title).to.be.a('string');",
+									"        pm.expect(post.author).to.be.a('string');",
+									"        pm.expect(post.body).to.be.a('string');",
+									"        pm.expect(post.bodytrim().length).to.be.greaterThan(0);",
+									"        pm.expect(post.authorId).to.not.be.null;",
+									"        pm.expect(post.authorId).to.be.a('number');",
+									"        pm.expect(post.authorId).to.eql(pm.variables.get(\"authorID\"));",
+									"        const date = new Date(post.createdDate);",
+									"        pm.expect(date instanceof Date && !isNaN(date)).to.be.true;",
+									"        pm.expect(date.getTime()).to.be.below(Date.now());",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts/?authorId={{authorID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								""
+							],
+							"query": [
+								{
+									"key": "authorId",
+									"value": "{{authorID}}"
+								}
+							]
+						},
+						"description": "GET Posts request\n\nThis test validates correct retrieve of all posts under a same AuthorID\n\n- No request body\n    \n- Typically a sucessfull response should return a `200 OK`status, and a JSON response that's an array of the posts that belong to that author\n    \n- Each array contains at least an id, title and author\n    \n- Ids should be unique identifier (not strings as in this case) - since we don't know exactly which format, let's suppose numbers\n    \n- Depending on caller, one could also expect each post to have a body (not only title), an authorId (currently only appear name) and a time stamp with the creation date of the post"
+					},
+					"response": []
+				},
+				{
+					"name": "GET All - By Author",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Response is a JSON array\", function () {",
+									"    pm.expect(Array.isArray(responseJson)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Validate properties for each array and its format\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    const requestBody = JSON.parse(pm.request.body.raw);",
+									"    responseJson.forEach(post => {",
+									"        // First check if object has properties",
+									"        pm.expect(post).to.have.property('id');",
+									"        pm.expect(post).to.have.property('title');",
+									"        pm.expect(post).to.have.property('author');",
+									"        pm.expect(post).to.have.property('authorId');",
+									"        pm.expect(post).to.have.property('body');",
+									"        pm.expect(post).to.have.property('createdAt');",
+									"        // Second check for property format",
+									"        pm.expect(post.id).to.not.be.null;",
+									"        pm.expect(post.id).to.be.a('number');",
+									"        pm.expect(post.title).to.be.a('string');",
+									"        pm.expect(post.author).to.be.a('string');",
+									"        // Verification that authors match",
+									"        pm.expect(post.author).to.contain(requestBody.author);",
+									"        pm.expect(post.body).to.be.a('string');",
+									"        pm.expect(post.bodytrim().length).to.be.greaterThan(0);",
+									"        pm.expect(post.authorId).to.not.be.null;",
+									"        pm.expect(post.authorId).to.be.a('number');",
+									"        const date = new Date(post.createdDate);",
+									"        pm.expect(date instanceof Date && !isNaN(date)).to.be.true;",
+									"        pm.expect(date.getTime()).to.be.below(Date.now());",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"author\": \"Author 1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								""
+							]
+						},
+						"description": "GET Posts request\n\nThis test validates correct retrieve of all posts under a similar author (not exact match if name is partial).\n\n- No request body\n    \n- Typically a sucessfull response should return a `200 OK`status, and a JSON response that's an array of the posts that had authors containing the string searched for\n    \n- Each array contains at least an id, title and author\n    \n- Ids should be unique identifier (not strings as in this case) - since we don't know exactly which format, let's suppose numbers\n    \n- Depending on caller, one could also expect each post to have a body (not only title), an authorId (currently only appear name) and a time stamp with the creation date of the post"
+					},
+					"response": []
+				},
+				{
+					"name": "GET One - By ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code 200 for existing post\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Validate properties and its format\", () => {",
+									"    const post = pm.response.json();",
+									"    const request = JSON.parse(pm.request.body.raw);",
+									"    pm.expect(post).to.have.property('id');",
+									"    pm.expect(post).to.have.property('title');",
+									"    pm.expect(post).to.have.property('author');",
+									"    pm.expect(post).to.have.property('authorId');",
+									"    pm.expect(post).to.have.property('body');",
+									"    pm.expect(post).to.have.property('createdAt');",
+									"    pm.expect(post.id).to.not.be.null;",
+									"    // Verify id matches the request",
+									"    pm.expect(response.id).to.eql(Number(pm.variables.get(\"id\")));",
+									"    pm.expect(post.id).to.be.a('number');",
+									"    pm.expect(post.title).to.be.a('string');",
+									"    pm.expect(post.author).to.be.a('string');",
+									"    pm.expect(post.body).to.be.a('string');",
+									"    pm.expect(post.bodytrim().length).to.be.greaterThan(0);",
+									"    pm.expect(post.authorId).to.not.be.null;",
+									"    pm.expect(post.authorId).to.be.a('number');",
+									"    const date = new Date(post.createdDate);",
+									"    pm.expect(date instanceof Date && !isNaN(date)).to.be.true;",
+									"    pm.expect(date.getTime()).to.be.below(Date.now());",
+									"    });",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts/{{id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{id}}"
+							]
+						},
+						"description": "GET Post request\n\nThis test validates correct retrieve of a specific post, by ID\n\n- No request body\n    \n- Typically a sucessfull response should return a `200 OK`status, and a JSON response with 1 item that matches that ID\n    \n- Object contains at least an id, title and author\n    \n- Id should be unique identifier - since we don't know exactly which format, let's suppose numbers\n    \n- Depending on caller, one could also expect to also have a body (not only title), an authorId (currently only appear name) and a time stamp with the creation date of the post"
+					},
+					"response": []
+				},
+				{
+					"name": "GET One - By ID - Nonexistent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", () => {",
+									"    pm.response.to.have.status(404);",
+									"    pm.expect(pm.response.text()).to.equal('Not Found');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts/{{invalidID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{invalidID}}"
+							]
+						},
+						"description": "GET Post request\n\nThis test validates validates a negative retrieve of a specific post by ID, given an invalid ID (meaning ID has correct format but does not exist)\n\n- No request body\n    \n- Typically a failed response should return a `404 Not Found` status"
+					},
+					"response": []
+				},
+				{
+					"name": "GET One - By ID - Wrong format",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"    pm.expect(pm.response.text()).to.equal('Bad Request');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/posts/{{wrongFormatID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{wrongFormatID}}"
+							]
+						},
+						"description": "GET Post request\n\nThis test validates validates a negative retrieve of a specific post by ID, given an invalid ID (meaning ID has correct format but does not exist)\n\n- No request body\n    \n- Typically a failed response should return a `400 Bad Request` status"
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE - Valid fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response values match request values\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    const requestBody = JSON.parse(pm.request.body.raw);",
+									"    pm.expect(responseJson.id).to.not.be.null;",
+									"    pm.expect(responseJson.id).to.be.a('number');",
+									"    pm.expect(responseJson.title).to.be.a('string');",
+									"    pm.expect(responseJson.title).to.eql(requestBody.title);",
+									"    pm.expect(responseJson.author).to.be.a('string');",
+									"    pm.expect(responseJson.author).to.eql(requestBody.author);",
+									"    pm.expect(responseJson.body).to.be.a('string');",
+									"    pm.expect(responseJson.body).to.eql(requestBody.body);",
+									"    pm.expect(responseJson.authorId).to.be.a('number');",
+									"    pm.expect(responseJson.authorId).to.eql(requestBody.authorId);",
+									"    pm.expect(responseJson.createdDate).to.eql(requestBody.createdDate);",
+									"    const date = new Date(responseJson.createdDate);",
+									"    pm.expect(date instanceof Date && !isNaN(date)).to.be.true;",
+									"    pm.expect(date.getTime()).to.be.below(Date.now());",
+									"    });",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let requestBody = pm.request.body.raw;\r",
+									"let body = {};\r",
+									"\r",
+									"try {\r",
+									"    body = JSON.parse(requestBody);\r",
+									"} catch (e) {\r",
+									"    throw new Error(\"Request body is not valid JSON\");\r",
+									"}\r",
+									"\r",
+									"// Validate 'title'\r",
+									"if (!body.hasOwnProperty('title') || typeof body.title !== 'string' || body.title.trim() === '') {\r",
+									"    throw new Error(\"Missing or invalid 'title' field. It must be a non-empty string.\");\r",
+									"}\r",
+									"\r",
+									"// Validate 'author'\r",
+									"if (!body.hasOwnProperty('author') || typeof body.author !== 'string' || body.author.trim() === '') {\r",
+									"    throw new Error(\"Missing or invalid 'author' field. It must be a non-empty string.\");\r",
+									"}\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"New Post!#   1234\",\r\n    \"author\": \"QA Testerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\",\r\n    \"authorId\": 2,\r\n    \"body\": \"Test body\",\r\n    \"createdDate\": \"2023-10-12T14:23:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts"
+							]
+						},
+						"description": "POST Create Post request\n\nThis test validates correct creation of a post\n\n- Typically a sucessfull response should return a `201 Created` status, and a JSON response that contains at least the indicated properties.\n    \n- Object contains at least id, title and author\n    \n- Ids should be unique identifier (not strings as in this case) - since we don't know exactly which format, let's suppose numbers\n    \n- Depending on caller, one could also expect each post to have a body (not only title), an authorId (currently only appear name) and a time stamp with the creation date of the post\n    \n- Values in the created object must match the values from the request"
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE - Invalid fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"    pm.expect(pm.response.text()).to.equal('Forbidden');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"New Post!#   1234\",\r\n    \"author\": \"QA Testerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\",\r\n    \"authorId\": 2,\r\n    \"body\": \"Test body\",\r\n    \"createdDate\": \"2023-10-12T14:23:00Z\",\r\n    \"wrongField\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts"
+							]
+						},
+						"description": "POST Create Post request\n\nThis test validates the negative creation of a post, due to introduction of unsupported properties in the request\n\n- Typically a failed response should return a `403 Forbidden` status, or maybe a `Bad Request` (unclear, would depend on API documentation)"
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE - Blank fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response values match request values\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    const requestBody = JSON.parse(pm.request.body.raw);",
+									"    pm.expect(responseJson.id).to.not.be.null;",
+									"    pm.expect(responseJson.id).to.be.a('number');",
+									"    pm.expect(responseJson.title).to.be.a('string');",
+									"    pm.expect(responseJson.title).to.eql(requestBody.title);",
+									"    pm.expect(responseJson.author).to.be.a('string');",
+									"    pm.expect(responseJson.author).to.eql(requestBody.author);",
+									"    pm.expect(responseJson.body).to.be.a('string');",
+									"    pm.expect(responseJson.body).to.eql(requestBody.body);",
+									"    pm.expect(responseJson.authorId).to.be.a('number');",
+									"    pm.expect(responseJson.authorId).to.eql(requestBody.authorId);",
+									"    pm.expect(responseJson.createdDate).to.eql(requestBody.createdDate);",
+									"    const date = new Date(responseJson.createdDate);",
+									"    pm.expect(date.getTime()).to.be.below(Date.now());",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let request = pm.request.body.raw;\r",
+									"let body = {};\r",
+									"\r",
+									"try {\r",
+									"    body = JSON.parse(request);\r",
+									"} catch (e) {\r",
+									"    throw new Error(\"Request body is not valid JSON\");\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('body') || typeof body.body !== 'string' || body.body.trim() === '') {\r",
+									"    throw new Error(\"Missing or invalid 'body' field.\");\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('authorId') || typeof body.authorId !== 'number') {\r",
+									"    throw new Error(\"Missing or invalid 'authorId' field.\");\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('title')) {\r",
+									"    console.log(\"Blank 'title' field.\")\r",
+									"}\r",
+									"else {\r",
+									"    if (typeof body.title == 'string' || body.title.trim() === '') {\r",
+									"        console.log(\"Blank 'title' field.\")\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('author')) {\r",
+									"    console.log(\"Blank 'author' field.\")\r",
+									"}\r",
+									"else {\r",
+									"    if (typeof body.author == 'string' || body.author.trim() === '') {\r",
+									"        console.log(\"Blank 'author' field.\")\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"\",\r\n    \"author\": \"QA Testerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\",\r\n    \"body\": \"Body post qa\",\r\n    \"authorId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts"
+							]
+						},
+						"description": "POST Create Post Request\n\nThis test validates the creation of a post accepting some optional fields that might come as empty strings, or blanks\n\n- Typically a sucessfull response should return a `201 Created` status, and a JSON response that contains at least the indicated properties\n    \n- We'll assume minimum required that Title and Author are some fields that can be empty, as could exist posts with only body or maybe posted anonymously, depending on documentation\n    \n- Creation date could also be a missing field that gets inserted automatically"
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE - Missing Fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"    pm.expect(pm.response.text()).to.equal('Bad Request')",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let requestBody = pm.request.body.raw;\r",
+									"let body = {};\r",
+									"\r",
+									"try {\r",
+									"    body = JSON.parse(requestBody);\r",
+									"} catch (e) {\r",
+									"    throw new Error(\"Request body is not valid JSON\");\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('body') || typeof body.body !== 'string' || body.body.trim() === '') {\r",
+									"    throw new Error(\"Missing or invalid 'body' field.\");\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('authorId') || typeof body.author !== 'number') {\r",
+									"    throw new Error(\"Missing or invalid 'authorId' field.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"New Post!#   1234\",\r\n    \"author\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts"
+							]
+						},
+						"description": "POST Create Post Request\n\nThis test validates the negative creation of a post, due to missing required fields in the request\n\n- Typically a failed response should return a `400 Bad Request` (unclear, would depend on API documentation)\n    \n- Assumed minimum required fields are Body and AuthorId (even if a post is anonymous, could have an id associated)"
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE - Valid fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response values match request values\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    const requestId = pm.variables.get(\"ID\");",
+									"    const requestBody = JSON.parse(pm.request.body.raw);",
+									"    pm.expect(responseJson.id).to.eql(requestId);",
+									"    pm.expect(responseJson.id).to.be.a('number');",
+									"    pm.expect(responseJson.title).to.be.a('string');",
+									"    pm.expect(responseJson.title).to.eql(requestBody.title);",
+									"    pm.expect(responseJson.author).to.be.a('string');",
+									"    pm.expect(responseJson.author).to.eql(requestBody.author);",
+									"    pm.expect(responseJson.body).to.be.a('string');",
+									"    pm.expect(responseJson.body).to.eql(requestBody.body);",
+									"    pm.expect(responseJson.authorId).to.be.a('number');",
+									"    pm.expect(responseJson.authorId).to.eql(requestBody.authorId);",
+									"    pm.expect(responseJson.createdDate).to.eql(requestBody.createdDate);",
+									"    const date = new Date(responseJson.createdDate);",
+									"    pm.expect(date instanceof Date && !isNaN(date)).to.be.true;",
+									"    pm.expect(date.getTime()).to.be.below(Date.now());",
+									"    });",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"New Post! Update -ç   1234\",\r\n    \"author\": \"QA Testerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\",\r\n    \"authorId\": 2,\r\n    \"body\": \"Test body\",\r\n    \"createdDate\": \"2023-10-12T14:23:00Z\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts/{{ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{ID}}"
+							]
+						},
+						"description": "PUT Update Post request\n\nThis test validates correct modification of a post\n\n- Typically a sucessfull response should return a `200 OK` status, and a JSON response that contains at least the indicated properties.\n    \n- Object contains at least an id, title and author\n    \n- Ids should be unique identifier (not strings as in this case) - since we don't know exactly which format, let's suppose numbers\n    \n- Depending on caller, one could also expect each post to have a body (not only title), an authorId (currently only appear name) and a time stamp with the creation/modification date of the post\n    \n- Values in the created object must match the values from the request"
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE - Invalid ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", () => {",
+									"    pm.response.to.have.status(404);",
+									"    pm.expect(pm.response.text()).to.equal('Not Found');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"New Post\",\r\n  \"author\": \"QA Tester\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts/{{invalidID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{invalidID}}"
+							]
+						},
+						"description": "PUT Update Post request\n\nThis test validates the negative modification of a post, due to an inexisting ID\n\n- Typically a failed response should return a `404 Not Found` status"
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE - Wrong format ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"    pm.expect(pm.response.text()).to.equal('Bad Request');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"New Post\",\r\n  \"author\": \"QA Tester\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts/{{wrongFormatID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{wrongFormatID}}"
+							]
+						},
+						"description": "PUT Update Post request\n\nThis test validates the negative creation of a post, due to a wrong formatted ID\n\n- Typically a failed response should return a `400 Bad Request` status"
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE - Blank fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response values match request values\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    const requestBody = JSON.parse(pm.request.body.raw);",
+									"    const requestId = pm.variables.get(\"ID\");",
+									"    pm.expect(responseJson.id).to.not.be.null;",
+									"    pm.expect(responseJson.id).to.be.a('number');",
+									"    pm.expect(responseJson.id).to.eql(requestId);",
+									"    pm.expect(responseJson.title).to.be.a('string');",
+									"    pm.expect(responseJson.title).to.eql(requestBody.title);",
+									"    pm.expect(responseJson.author).to.be.a('string');",
+									"    pm.expect(responseJson.author).to.eql(requestBody.author);",
+									"    pm.expect(responseJson.body).to.be.a('string');",
+									"    pm.expect(responseJson.body).to.eql(requestBody.body);",
+									"    pm.expect(responseJson.authorId).to.be.a('number');",
+									"    pm.expect(responseJson.authorId).to.eql(requestBody.authorId);",
+									"    pm.expect(responseJson.createdDate).to.eql(requestBody.createdDate);",
+									"    const date = new Date(responseJson.createdDate);",
+									"    pm.expect(date.getTime()).to.be.below(Date.now());",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let request = pm.request.body.raw;\r",
+									"let body = {};\r",
+									"\r",
+									"try {\r",
+									"    body = JSON.parse(request);\r",
+									"} catch (e) {\r",
+									"    throw new Error(\"Request body is not valid JSON\");\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('body') || typeof body.body !== 'string' || body.body.trim() === '') {\r",
+									"    throw new Error(\"Missing or invalid 'body' field.\");\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('authorId') || typeof body.authorId !== 'number') {\r",
+									"    throw new Error(\"Missing or invalid 'authorId' field.\");\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('title')) {\r",
+									"    console.log(\"Blank 'title' field.\")\r",
+									"}\r",
+									"else {\r",
+									"    if (typeof body.title == 'string' || body.title.trim() === '') {\r",
+									"        console.log(\"Blank 'title' field.\")\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('author')) {\r",
+									"    console.log(\"Blank 'author' field.\")\r",
+									"}\r",
+									"else {\r",
+									"    if (typeof body.author == 'string' || body.author.trim() === '') {\r",
+									"        console.log(\"Blank 'author' field.\")\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"\",\r\n    \"author\": \"QA Testerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\",\r\n    \"body\": \"Body post qa\",\r\n    \"authorId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts/{{ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{ID}}"
+							]
+						},
+						"description": "PUT Update Post Request\n\nThis test validates the modification of a post accepting some optional fields that might come as empty strings, or blanks\n\n- Typically a sucessfull response should return a `200 OK` status, and a JSON response that contains at least the indicated properties\n    \n- We'll assume minimum required that Title and Author are some fields that can be empty, as could exist posts with only body or maybe posted anonymously, depending on documentation\n    \n- Creation date could also be a missing field that gets inserted automatically"
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE - Missing Fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(pm.response.text()).to.equal('Bad Request')\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let requestBody = pm.request.body.raw;\r",
+									"let body = {};\r",
+									"\r",
+									"try {\r",
+									"    body = JSON.parse(requestBody);\r",
+									"} catch (e) {\r",
+									"    throw new Error(\"Request body is not valid JSON\");\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('body') || typeof body.body !== 'string' || body.body.trim() === '') {\r",
+									"    throw new Error(\"Missing or invalid 'body' field.\");\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('authorId') || typeof body.author !== 'number') {\r",
+									"    throw new Error(\"Missing or invalid 'authorId' field.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"author\": 1\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts/{{ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{ID}}"
+							]
+						},
+						"description": "PUT Update Post Request\n\nThis test validates the negative modification of a post, due to missing required fields in the request\n\n- Typically a failed response should return a `400 Bad Request` (unclear, would depend on API documentation)\n    \n- Assumed minimum required fields are Body and AuthorId (even if a post is anonymous, could have an id associated)"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Valid ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"pm.test(\"Response doesn't have a body\", () => {",
+									"    pm.expect(response.json()).empty;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts/{{Id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{Id}}"
+							]
+						},
+						"description": "DELETE Posts request\n\nThis test validates correct delete by ID, given a valid existing ID\n\n- No request body\n    \n- Typically a sucessfull response should return a `204 No Content` status, and no body"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Invalid ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", () => {",
+									"    pm.response.to.have.status(404);",
+									"    pm.expect(pm.response.text()).to.equal('Not Found');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/posts/{{invalidID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{invalidID}}"
+							]
+						},
+						"description": "DELETE Posts request\n\nThis test validates a negative delete by ID, given an invalid ID (meaning ID has correct format but does not exist)\n\n- No request body\n    \n- Typically a failed response should return a `404 Not Found` status"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Wrong format ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"    pm.expect(pm.response.text()).to.equal('Bad Request');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/posts/{{wrongFormatID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{wrongFormatID}}"
+							]
+						},
+						"description": "DELETE Posts request\n\nThis test validates a negative delete by ID, given an ID that has incorrect format\n\n- No request body\n    \n- Typically a failed response should return a `400 Bad Request` status"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Valid AuthorID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response doesn't have a body\", () => {",
+									"    pm.expect(response.json()).empty;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts/{{authorID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{authorID}}"
+							]
+						},
+						"description": "DELETE Posts request\n\nThis test validates correct delete by AuthorID, given a valid existing author.\n\nIt could make sense to delete all the comments from a certain author at some point, so when the author exists all associated post should be removed OK\n\n- No request body\n    \n- Typically a sucessfull response should return a `204 No Content` status, and no body\n    \n- Ideally there could be an indicator of the number of posts deleted"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Invalid AuthorID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", () => {",
+									"    pm.response.to.have.status(404);",
+									"    pm.expect(pm.response.text()).to.equal('Not Found');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "aaa",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts/{{invalidID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{invalidID}}"
+							]
+						},
+						"description": "DELETE Posts request\n\nThis test validates a negative delete by AuthorID, given an invalid AuthorID (meaning ID has correct format but does not exist)\n\n- No request body\n    \n- Typically a failed response should return a `404 Not Found` status"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Wrong format AuthorID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(404);",
+									"    pm.expect(pm.response.text()).to.equal('Not Found');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "aaa",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts/{{wrongFormatID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{wrongFormatID}}"
+							]
+						},
+						"description": "DELETE Posts request\n\nThis test validates a negative delete by AuthorID, given an AuthorID that has incorrect format\n\n- No request body\n    \n- Typically a failed response should return a `400 Bad Request` status"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Comments",
+			"item": [
+				{
+					"name": "GET All",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Response is a JSON array\", function () {",
+									"    pm.expect(Array.isArray(responseJson)).to.be.true;",
+									"});",
+									"pm.test(\"Validate properties for each array and its format\", () => {",
+									"    responseJson.forEach(comment => {",
+									"        pm.expect(comment).to.have.property('id');",
+									"        pm.expect(comment).to.have.property('body');",
+									"        pm.expect(comment).to.have.property('postId');",
+									"        pm.expect(comment).to.have.property('authorId');",
+									"        pm.expect(post).to.have.property('createdAt')",
+									"        // Second check for property format",
+									"        pm.expect(post.id).to.not.be.null;",
+									"        pm.expect(post.id).to.be.a('number');",
+									"        pm.expect(post.body).to.be.a('string');",
+									"        pm.expect(post.bodytrim().length).to.be.greaterThan(0);",
+									"        pm.expect(post.postId).to.not.be.null;",
+									"        pm.expect(post.postId).to.be.a('number');",
+									"        pm.expect(post.authorId).to.not.be.null;",
+									"        pm.expect(post.authorId).to.be.a('number');",
+									"        const date = new Date(item.createdDate);",
+									"        pm.expect(date instanceof Date && !isNaN(date)).to.be.true;",
+									"        pm.expect(date.getTime()).to.be.below(Date.now());",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/comments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments"
+							]
+						},
+						"description": "GET Comments request\n\nThis test validates correct retrieve of all comments\n\n- No request body\n    \n- Typically a sucessfull response should return a `200 OK`status, and a JSON response that's an array of the comments in the system\n    \n- Each array contains at least an id, body and postId\n    \n- Id and postId should be unique identifier (not strings as in this case) - since we don't know exactly which format, let's suppose numbers\n    \n- Depending on caller, one could also expect each comment to have an authorId (currently only appear name) and a time stamp with the creation date of the comment"
+					},
+					"response": []
+				},
+				{
+					"name": "GET All - By AuthorID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Response is a JSON array\", function () {",
+									"    pm.expect(Array.isArray(responseJson)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Validate properties for each array and its format\", () => {",
+									"    const responseJson = pm.response.json();;",
+									"    responseJson.forEach(post => {",
+									"        // First check if object has properties",
+									"        pm.expect(post).to.have.property('id');",
+									"        pm.expect(post).to.have.property('postId');",
+									"        pm.expect(post).to.have.property('authorId');",
+									"        pm.expect(post).to.have.property('body');",
+									"        pm.expect(post).to.have.property('createdAt');",
+									"        // Second check for property format",
+									"        pm.expect(post.id).to.not.be.null;",
+									"        pm.expect(post.id).to.be.a('number');",
+									"        pm.expect(post.body).to.be.a('string');",
+									"        pm.expect(post.bodytrim().length).to.be.greaterThan(0);",
+									"        pm.expect(post.postId).to.not.be.null;",
+									"        pm.expect(post.postId).to.be.a('number');",
+									"        pm.expect(post.authorId).to.not.be.null;",
+									"        pm.expect(post.authorId).to.be.a('number');",
+									"        // Verification that authorIds match",
+									"        pm.expect(post.authorId).to.eql(pm.variables.get(\"authorID\"));",
+									"        const date = new Date(post.createdDate);",
+									"        pm.expect(date instanceof Date && !isNaN(date)).to.be.true;",
+									"        pm.expect(date.getTime()).to.be.below(Date.now());",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/comments/?authorId={{authorID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								""
+							],
+							"query": [
+								{
+									"key": "authorId",
+									"value": "{{authorID}}"
+								}
+							]
+						},
+						"description": "GET Comments request\n\nThis test validates correct retrieve of all comments under a same AuthorID\n\n- No request body\n    \n- Typically a sucessfull response should return a `200 OK`status, and a JSON response that's an array of the comments that belong to that author\n    \n- Each array contains at least an id, body and postId\n    \n- Ids should be unique identifier (not strings as in this case) - since we don't know exactly which format, let's suppose numbers\n    \n- Depending on caller, one could also expect each post to have a title (not only body), an authorId, maybe a postTitle even, and a time stamp with the creation date of the post"
+					},
+					"response": []
+				},
+				{
+					"name": "GET All - By PostID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Response is a JSON array\", function () {",
+									"    pm.expect(Array.isArray(responseJson)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Validate properties for each array and its format\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    responseJson.forEach(post => {",
+									"        // First check if object has properties",
+									"        pm.expect(post).to.have.property('id');",
+									"        pm.expect(post).to.have.property('postId');",
+									"        pm.expect(post).to.have.property('authorId');",
+									"        pm.expect(post).to.have.property('body');",
+									"        pm.expect(post).to.have.property('createdAt');",
+									"        // Second check for property format",
+									"        pm.expect(post.id).to.not.be.null;",
+									"        pm.expect(post.id).to.be.a('number');",
+									"        pm.expect(post.postId).to.not.be.null;",
+									"        pm.expect(post.postId).to.be.a('number');",
+									"        pm.expect(post.postId).to.eql(pm.variables.get(\"postID\"));",
+									"        pm.expect(post.body).to.be.a('string');",
+									"        pm.expect(post.bodytrim().length).to.be.greaterThan(0);",
+									"        pm.expect(post.authorId).to.not.be.null;",
+									"        pm.expect(post.authorId).to.be.a('number');",
+									"        const date = new Date(post.createdDate);",
+									"        pm.expect(date instanceof Date && !isNaN(date)).to.be.true;",
+									"        pm.expect(date.getTime()).to.be.below(Date.now());",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/comments/?postId={{postID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								""
+							],
+							"query": [
+								{
+									"key": "postId",
+									"value": "{{postID}}"
+								}
+							]
+						},
+						"description": "GET Comments request\n\nThis test validates correct retrieve of all comments under a same postID\n\n- No request body\n    \n- Typically a sucessfull response should return a `200 OK`status, and a JSON response that's an array of the comments that belong to the same post\n    \n- Each array contains at least an id, body and postId\n    \n- Ids should be unique identifier (not strings as in this case) - since we don't know exactly which format, let's suppose numbers\n    \n- Depending on caller, one could also expect each post to have a title (not only body), an authorId, maybe a postTitle even, and a time stamp with the creation date of the post"
+					},
+					"response": []
+				},
+				{
+					"name": "GET One - By ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"The response has all properties\", () => {",
+									"    // Response expected to contain id, body, and postId for a specific comment",
+									"    // Posts without ID should not be allowed",
+									"    // Since someone created a comment, author should also be expected",
+									"    // One could also expect a post to have a title maybe",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.be.an(\"object\");",
+									"    pm.expect(responseJson).to.have.property('id');",
+									"    pm.expect(responseJson).to.have.property('body');",
+									"    pm.expect(responseJson).to.have.property('postId');",
+									"    pm.expect(responseJson.id).to.not.equal(undefined, \"ID should not be undefined\");",
+									"    pm.expect(responseJson.postId).to.not.equal(undefined, \"ID should not be undefined\");",
+									"});",
+									"",
+									"pm.test(\"Comment has numeric ID\", () => {",
+									"    // value \"id\" and \"postId\" should be set as number",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.be.a('number');",
+									"    pm.expect(jsonData.id).to.be.a('number');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/comments/{{commentId}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								"{{commentId}}"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "GET One - By ID - Nonexistent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", () => {",
+									"    pm.response.to.have.status(404);",
+									"    pm.expect(pm.response.text()).to.equal('Not Found');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/comments/{{invalidID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								"{{invalidID}}"
+							]
+						},
+						"description": "GET Comment request\n\nThis test validates validates a negative retrieve of a specific comment by ID, given an invalid ID (meaning ID has correct format but does not exist)\n\n- No request body\n    \n- Typically a failed response should return a `404 Not Found` status"
+					},
+					"response": []
+				},
+				{
+					"name": "GET One - By ID - Wrong format",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"    pm.expect(pm.response.text()).to.equal('Bad Request');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/comments/{{wrongFormatID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								"{{wrongFormatID}}"
+							]
+						},
+						"description": "GET Comment request\n\nThis test validates validates a negative retrieve of a specific comment by ID, given an invalid ID (meaning ID has correct format but does not exist)\n\n- No request body\n    \n- Typically a failed response should return a `400 Bad Request` status"
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE - Valid fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response values match request values\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    const requestBody = JSON.parse(pm.request.body.raw);",
+									"    pm.expect(responseJson.id).to.not.be.null;",
+									"    pm.expect(responseJson.id).to.be.a('number');",
+									"    pm.expect(responseJson.body).to.be.a('string');",
+									"    pm.expect(responseJson.body).to.eql(requestBody.body);",
+									"    pm.expect(responseJson.authorId).to.be.a('number');",
+									"    pm.expect(responseJson.authorId).to.eql(requestBody.authorId);",
+									"    const date = new Date(responseJson.createdDate);",
+									"    pm.expect(date instanceof Date && !isNaN(date)).to.be.true;",
+									"    pm.expect(date.getTime()).to.be.below(Date.now());",
+									"    });",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let requestBody = pm.request.body.raw;\r",
+									"let body = {};\r",
+									"\r",
+									"try {\r",
+									"    body = JSON.parse(requestBody);\r",
+									"} catch (e) {\r",
+									"    throw new Error(\"Request body is not valid JSON\");\r",
+									"}\r",
+									"\r",
+									"// Validate 'body'\r",
+									"if (!body.hasOwnProperty('body') || typeof body.body !== 'string' || body.body.trim() === '') {\r",
+									"    throw new Error(\"Missing or invalid 'body' field.\");\r",
+									"}\r",
+									"\r",
+									"// Validate 'postId'\r",
+									"if (!body.hasOwnProperty('postId') || typeof body.postId !== 'number' || typeof body.postId == 'null') {\r",
+									"    throw new Error(\"Missing or invalid 'postId' field.\");\r",
+									"}\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"Another comment 1234++\",\r\n    \"postId\": 2,\r\n    \"authorId\": 45\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/comments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments"
+							]
+						},
+						"description": "POST Create Comment request\n\nThis test validates correct creation of a comment\n\n- Typically a sucessfull response should return a `201 Created` status, and a JSON response that contains at least the indicated properties.\n    \n- Object contains at least an id, body and postId\n    \n- Ids should be unique identifier (not strings as in this case) - since we don't know exactly which format, let's suppose numbers\n    \n- Depending on caller, one could also expect each post to have a title (not only body), an authorId and a time stamp with the creation date of the comment\n    \n- Values in the created object must match the values from the request"
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE - Invalid fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"    pm.expect(pm.response.text()).to.equal('Forbidden');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"New Post!#   1234\",\r\n    \"author\": \"QA Testerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\",\r\n    \"authorId\": 2,\r\n    \"body\": \"Test body\",\r\n    \"createdDate\": \"2023-10-12T14:23:00Z\",\r\n    \"wrongField\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts"
+							]
+						},
+						"description": "POST Create Comment request\n\nThis test validates the negative creation of a comment, due to introduction of unsupported properties in the request\n\n- Typically a failed response should return a `403 Forbidden` status, or maybe a `Bad Request` (unclear, would depend on API documentation)"
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE - Valid fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response values match request values\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    const requestId = pm.variables.get(\"ID\");",
+									"    const requestBody = JSON.parse(pm.request.body.raw);",
+									"    pm.expect(responseJson.id).to.eql(requestId);",
+									"    pm.expect(responseJson.id).to.be.a('number');",
+									"    pm.expect(responseJson.title).to.be.a('string');",
+									"    pm.expect(responseJson.title).to.eql(requestBody.title);",
+									"    pm.expect(responseJson.author).to.be.a('string');",
+									"    pm.expect(responseJson.author).to.eql(requestBody.author);",
+									"    pm.expect(responseJson.body).to.be.a('string');",
+									"    pm.expect(responseJson.body).to.eql(requestBody.body);",
+									"    pm.expect(responseJson.authorId).to.be.a('number');",
+									"    pm.expect(responseJson.authorId).to.eql(requestBody.authorId);",
+									"    pm.expect(responseJson.createdDate).to.eql(requestBody.createdDate);",
+									"    const date = new Date(responseJson.createdDate);",
+									"    pm.expect(date instanceof Date && !isNaN(date)).to.be.true;",
+									"    pm.expect(date.getTime()).to.be.below(Date.now());",
+									"    });",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"some body once\",\r\n    \"postId\": 1,\r\n    \"createdDate\": \"2023-10-12T14:23:00Z\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/comments/{{ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								"{{ID}}"
+							]
+						},
+						"description": "PUT Update Comment request\n\nThis test validates correct modification of a comment\n\n- Typically a sucessfull response should return a `200 OK` status, and a JSON response that contains at least the indicated properties.\n    \n- Object contains at least an id, body and postId\n    \n- Ids should be unique identifier (not strings as in this case) - since we don't know exactly which format, let's suppose numbers\n    \n- Depending on caller, one could also expect each post to title, authorId, and a time stamp with the creation/modification date of the post\n    \n- Values in the created object must match the values from the request"
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE - Invalid ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 for non-existent comment\", () => {",
+									"    //Expect API to return error code when id does not exist",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"some comment\",\r\n    \"postId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/comments/{{invalidID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								"{{invalidID}}"
+							]
+						},
+						"description": "PUT Update Comment request\n\nThis test validates the negative modification of a comment, due to a wrong formatted ID\n\n- Typically a failed response should return a `400 Bad Request` status"
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE - Wrong format ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"    pm.expect(pm.response.text()).to.equal('Bad Request');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"some comment\",\r\n    \"postId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/comments/{{wrongFormatID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								"{{wrongFormatID}}"
+							]
+						},
+						"description": "PUT Update Comment request\n\nThis test validates the negative modification of a comment, due to a wrong formatted ID\n\n- Typically a failed response should return a `400 Bad Request` status"
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE - Blank fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response values match request values\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    const requestBody = JSON.parse(pm.request.body.raw);",
+									"    const requestId = pm.variables.get(\"ID\");",
+									"    pm.expect(responseJson.id).to.not.be.null;",
+									"    pm.expect(responseJson.id).to.be.a('number');",
+									"    pm.expect(responseJson.id).to.eql(requestId);",
+									"    pm.expect(responseJson.body).to.be.a('string');",
+									"    pm.expect(responseJson.body).to.eql(requestBody.body);",
+									"    pm.expect(responseJson.postId).to.be.a('number');",
+									"    pm.expect(responseJson.postId).to.eql(requestBody.postId);",
+									"    pm.expect(responseJson.createdDate).to.eql(requestBody.createdDate);",
+									"    const date = new Date(responseJson.createdDate);",
+									"    pm.expect(date.getTime()).to.be.below(Date.now());",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let request = pm.request.body.raw;\r",
+									"let body = {};\r",
+									"\r",
+									"try {\r",
+									"    body = JSON.parse(request);\r",
+									"} catch (e) {\r",
+									"    throw new Error(\"Request body is not valid JSON\");\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('body') || typeof body.body !== 'string' || body.body.trim() === '') {\r",
+									"    throw new Error(\"Missing or invalid 'body' field.\");\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('postId') || typeof body.postId !== 'number') {\r",
+									"    throw new Error(\"Missing or invalid 'postId' field.\");\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('title')) {\r",
+									"    console.log(\"Blank 'title' field.\")\r",
+									"}\r",
+									"else {\r",
+									"    if (typeof body.title == 'string' || body.title.trim() === '') {\r",
+									"        console.log(\"Blank 'title' field.\")\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('author')) {\r",
+									"    console.log(\"Blank 'author' field.\")\r",
+									"}\r",
+									"else {\r",
+									"    if (typeof body.author == 'string' || body.author.trim() === '') {\r",
+									"        console.log(\"Blank 'author' field.\")\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('authorId')) {\r",
+									"    console.log(\"Blank 'authorId' field.\")\r",
+									"}\r",
+									"else {\r",
+									"    if (typeof body.author == null || body.author.trim() === '') {\r",
+									"        console.log(\"Blank 'author' field.\")\r",
+									"    }\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"\",\r\n    \"author\": \"QA Testerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\",\r\n    \"body\": \"Body post qa\",\r\n    \"authorId\": \"\",\r\n    \"postId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/comments/{{ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								"{{ID}}"
+							]
+						},
+						"description": "PUT Update Comment Request\n\nThis test validates the modification of a comment accepting some optional fields that might come as empty strings, or blanks\n\n- Typically a sucessfull response should return a `200 OK` status, and a JSON response that contains at least the indicated properties\n    \n- We'll assume minimum required are Body and postId, and some fields that can be empty, as could exist posts with only body or maybe posted anonymously, depending on documentation\n    \n- Creation date could also be a missing field that gets inserted automatically"
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE - Missing Fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(pm.response.text()).to.equal('Bad Request')\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let requestBody = pm.request.body.raw;\r",
+									"let body = {};\r",
+									"\r",
+									"try {\r",
+									"    body = JSON.parse(requestBody);\r",
+									"} catch (e) {\r",
+									"    throw new Error(\"Request body is not valid JSON\");\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('body') || typeof body.body !== 'string' || body.body.trim() === '') {\r",
+									"    throw new Error(\"Missing or invalid 'body' field.\");\r",
+									"}\r",
+									"\r",
+									"if (!body.hasOwnProperty('postId') || typeof body.postId !== 'number') {\r",
+									"    throw new Error(\"Missing or invalid 'postId' field.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"some comment\",\r\n    \"postId\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/comments/{{ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								"{{ID}}"
+							]
+						},
+						"description": "PUT Update\n\nThis test validates the negative modification of a comment, due to missing required fields in the request\n\n- Typically a failed response should return a `400 Bad Request` (unclear, would depend on API documentation)\n    \n- Assumed minimum required fields are Body and postId"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Valid ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"pm.test(\"Response doesn't have a body\", () => {",
+									"    pm.expect(response.json()).empty;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/comments/{{commentId}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								"{{commentId}}"
+							]
+						},
+						"description": "DELETE Comments request\n\nThis test validates correct delete by ID, given a valid existing ID\n\n- No request body\n    \n- Typically a sucessfull response should return a `204 No Content` status, and no body"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Invalid ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", () => {",
+									"    pm.response.to.have.status(404);",
+									"    pm.expect(pm.response.text()).to.equal('Not Found');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/comments/{{invalidID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								"{{invalidID}}"
+							]
+						},
+						"description": "DELETE Comments request\n\nThis test validates a negative delete by ID, given an invalid ID (meaning ID has correct format but does not exist)\n\n- No request body\n    \n- Typically a failed response should return a `404 Not Found` status"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Wrong format ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(404);",
+									"    pm.expect(pm.response.text()).to.equal('Not Found');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {",
+									"    const request = pm.request.body",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;",
+									"    pm.expect(bodyIsEmpty).to.be.true;",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/comments/{{wrongFormatID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								"{{wrongFormatID}}"
+							]
+						},
+						"description": "DELETE Comments request\n\nThis test validates a negative delete by ID, given an ID that has incorrect format\n\n- No request body\n    \n- Typically a failed response should return a `400 Bad Request` status"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Valid PostID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response doesn't have a body\", () => {",
+									"    pm.expect(response.json()).empty;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {",
+									"    const request = pm.request.body",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;",
+									"    pm.expect(bodyIsEmpty).to.be.true;",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/comments/{{id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								"{{id}}"
+							]
+						},
+						"description": "DELETE Comments request\n\nThis test validates correct delete by PostID, given a valid existing post.\n\nIt could make sense to delete all the comments under the same post (like if there's an option to enable/disable comments), so when this operation is called all associated comments should be removed OK\n\n- No request body\n    \n- Typically a sucessfull response should return a `204 No Content` status, and no body\n    \n- Ideally there could be an indicator of the number of comments deleted"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Invalid PostID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 for non-existent post\", () => {",
+									"    //Expect API to return error code when postId does not exist",
+									"    // Could be because it has already been deleted or because id is incorrect",
+									"    pm.response.to.have.status(404);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {",
+									"    const request = pm.request.body",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;",
+									"    pm.expect(bodyIsEmpty).to.be.true;",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/comments/{{invalidID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								"{{invalidID}}"
+							]
+						},
+						"description": "DELETE Comments request\n\nThis test validates a negative delete by PostID, given an invalid ID (meaning ID has correct format but does not exist)\n\n- No request body\n    \n- Typically a failed response should return a `404 Not Found` status, and no body"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Valid AuthorID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response doesn't have a body\", () => {",
+									"    pm.expect(response.json()).empty;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {",
+									"    const request = pm.request.body",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;",
+									"    pm.expect(bodyIsEmpty).to.be.true;",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/comments/{{authorID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								"{{authorID}}"
+							]
+						},
+						"description": "DELETE Comments request\n\nThis test validates correct delete by PostID, given a valid existing post.\n\nIt could make sense to delete all the comments under the same post (like if there's an option to enable/disable comments), so when this operation is called all associated comments should be removed OK\n\n- No request body\n    \n- Typically a sucessfull response should return a `204 No Content` status, and no body\n    \n- Ideally there could be an indicator of the number of comments deleted"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Invalid PostID Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 for non-existent post\", () => {",
+									"    //Expect API to return error code when postId does not exist",
+									"    // Could be because it has already been deleted or because id is incorrect",
+									"    pm.response.to.have.status(404);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {",
+									"    const request = pm.request.body",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;",
+									"    pm.expect(bodyIsEmpty).to.be.true;",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/comments/{{invalidID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"comments",
+								"{{invalidID}}"
+							]
+						},
+						"description": "DELETE Comments request\n\nThis test validates a negative delete by PostID, given an invalid ID (meaning ID has correct format but does not exist)\n\n- No request body\n    \n- Typically a failed response should return a `404 Not Found` status, and no body"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "GET All",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Response is a JSON array\", function () {",
+									"    pm.expect(Array.isArray(responseJson)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Validate properties for each array and its format\", () => {",
+									"    responseJson.forEach(profile => {",
+									"        // First check if object has properties",
+									"        pm.expect(profile).to.have.property('id');",
+									"        pm.expect(profile).to.have.property('name');",
+									"        // Second check for property format",
+									"        pm.expect(profile.id).to.not.be.null;",
+									"        pm.expect(profile.id).to.be.a('number');",
+									"        pm.expect(profile.name).to.be.a('string');",
+									"        pm.expect(profile.name().length).to.be.greaterThan(0);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"profile"
+							]
+						},
+						"description": "GET Profiles request\n\nThis test validates correct retrieve of all profiles\n\n- No request body\n    \n- Typically a sucessfull response should return a `200 OK`status, and a JSON response that's an array of the profiles in the system"
+					},
+					"response": []
+				},
+				{
+					"name": "GET One - By ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Response is a JSON array\", function () {",
+									"    pm.expect(Array.isArray(responseJson)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Validate properties for each array and its format\", () => {",
+									"    responseJson.forEach(profile => {",
+									"        // First check if object has properties",
+									"        pm.expect(profile).to.have.property('id');",
+									"        pm.expect(profile).to.have.property('name');",
+									"        // Second check for property format",
+									"        pm.expect(profile.id).to.not.be.null;",
+									"        pm.expect(profile.id).to.be.a('number');",
+									"        pm.expect(profile.id).to.eql(pm.variables.get(\"profileID\"));",
+									"        pm.expect(profile.name).to.be.a('string');",
+									"        pm.expect(profile.name().length).to.be.greaterThan(0);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/profile/{{profileID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"profile",
+								"{{profileID}}"
+							]
+						},
+						"description": "GET Profile request\n\nThis test validates correct retrieve of a specific profile, by ID\n\n- No request body\n    \n- Typically a sucessfull response should return a `200 OK`status, and a JSON response with 1 item that matches that ID\n    \n- Object contains at least an id and name\n    \n- Id should be unique identifier - since we don't know exactly which format, let's suppose numbers\n    \n- Depending on caller, one could also expect to also have a time stamp with its creation date"
+					},
+					"response": []
+				},
+				{
+					"name": "GET One - By ID - Nonexistent Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", () => {",
+									"    pm.response.to.have.status(404);",
+									"    pm.expect(pm.response.text()).to.equal('Not Found');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts/{{invalidID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{invalidID}}"
+							]
+						},
+						"description": "GET Profile request\n\nThis test validates validates a negative retrieve of a specific profile by ID, given an invalid ID (meaning ID has correct format but does not exist)\n\n- No request body\n    \n- Typically a failed response should return a `404 Not Found` status"
+					},
+					"response": []
+				},
+				{
+					"name": "GET One - By ID - Wrong format Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"    pm.expect(pm.response.text()).to.equal('Bad Request');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/posts/{{wrongFormatID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{wrongFormatID}}"
+							]
+						},
+						"description": "GET Profile request\n\nThis test validates validates a negative retrieve of a specific profile by ID, given an invalid ID (meaning ID has correct format but does not exist)\n\n- No request body\n    \n- Typically a failed response should return a `400 Bad Request` status"
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE - Valid fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response values match request values\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    const requestBody = JSON.parse(pm.request.body.raw);",
+									"    pm.expect(responseJson.id).to.not.be.null;",
+									"    pm.expect(responseJson.id).to.be.a('number');",
+									"    pm.expect(responseJson.name).to.be.a('string');",
+									"    pm.expect(responseJson.name).to.eql(requestBody.name);",
+									"    const date = new Date(responseJson.createdDate);",
+									"    pm.expect(date instanceof Date && !isNaN(date)).to.be.true;",
+									"    pm.expect(date.getTime()).to.be.below(Date.now());",
+									"    });",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let requestBody = pm.request.body.raw;\r",
+									"let body = {};\r",
+									"\r",
+									"try {\r",
+									"    body = JSON.parse(requestBody);\r",
+									"} catch (e) {\r",
+									"    throw new Error(\"Request body is not valid JSON\");\r",
+									"}\r",
+									"\r",
+									"// Validate 'name'\r",
+									"if (!body.hasOwnProperty('name') || typeof body.name !== 'string' || body.name.trim() === '') {\r",
+									"    throw new Error(\"Missing or invalid 'name' field.\");\r",
+									"}\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Another profile 1234++\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"profile"
+							]
+						},
+						"description": "POST Create Profile request\n\nThis test validates correct creation of a profile\n\n- Typically a sucessfull response should return a `201 Created` status, and a JSON response that contains at least the indicated properties.\n    \n- Object contains at least a name and id\n    \n- Ids should be unique identifier (not strings as in this case) - since we don't know exactly which format, let's suppose numbers\n    \n- Depending on caller, one could also expect each post to have other profile parameters (like phone, mail, country...) and a time stamp with the creation date of the profile\n    \n- Values in the created object must match the values from the request"
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE - Invalid fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"    pm.expect(pm.response.text()).to.equal('Forbidden');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"QA Testerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\",\r\n    \"wrongField\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/profile/{{invalidID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"profile",
+								"{{invalidID}}"
+							]
+						},
+						"description": "POST Create Profile request\n\nThis test validates the negative creation of a profile, due to introduction of unsupported properties in the request\n\n- Typically a failed response should return a `403 Forbidden` status, or maybe a `Bad Request` (unclear, would depend on API documentation)"
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE - Valid fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response values match request values\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    const requestId = pm.variables.get(\"ID\");",
+									"    const requestBody = JSON.parse(pm.request.body.raw);",
+									"    pm.expect(responseJson.id).to.eql(requestId);",
+									"    pm.expect(responseJson.id).to.be.a('number');",
+									"    pm.expect(responseJson.title).to.be.a('string');",
+									"    pm.expect(responseJson.title).to.eql(requestBody.title);",
+									"    pm.expect(responseJson.author).to.be.a('string');",
+									"    pm.expect(responseJson.author).to.eql(requestBody.author);",
+									"    pm.expect(responseJson.body).to.be.a('string');",
+									"    pm.expect(responseJson.body).to.eql(requestBody.body);",
+									"    pm.expect(responseJson.authorId).to.be.a('number');",
+									"    pm.expect(responseJson.authorId).to.eql(requestBody.authorId);",
+									"    pm.expect(responseJson.createdDate).to.eql(requestBody.createdDate);",
+									"    const date = new Date(responseJson.createdDate);",
+									"    pm.expect(date instanceof Date && !isNaN(date)).to.be.true;",
+									"    pm.expect(date.getTime()).to.be.below(Date.now());",
+									"    });",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"some body once\",\r\n    \"createdDate\": \"2023-10-12T14:23:00Z\",\r\n    \"email\": \"aaa@test.com\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/profile/{{ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"profile",
+								"{{ID}}"
+							]
+						},
+						"description": "PUT Update Profile request\n\nThis test validates correct modification of a profile\n\n- Object contains at least an id and name\n    \n- Ids should be unique identifier (not strings as in this case) - since we don't know exactly which format, let's suppose numbers\n    \n\n- Depending on caller, one could also expect each post to have other profile parameters (like phone, mail, country...) and a time stamp with the creation date of the profile\n    \n- Values in the modified object must match the values from the request"
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE - Invalid ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", () => {",
+									"    pm.response.to.have.status(404);",
+									"    pm.expect(pm.response.text()).to.equal('Not Found');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"some body once\",\r\n    \"createdDate\": \"2023-10-12T14:23:00Z\",\r\n    \"email\": \"aaa@test.com\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/profile/{{invalidID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"profile",
+								"{{invalidID}}"
+							]
+						},
+						"description": "PUT Update Profile request\n\nThis test validates the negative modification of a profile, due to a wrong formatted ID\n\n- Typically a failed response should return a `404 Not Found` statusS"
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE - Wrong format ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"    pm.expect(pm.response.text()).to.equal('Bad Request');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"some body once\",\r\n    \"createdDate\": \"2023-10-12T14:23:00Z\",\r\n    \"email\": \"aaa@test.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/profile/{{wrongFormatID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"profile",
+								"{{wrongFormatID}}"
+							]
+						},
+						"description": "PUT Update Profile request\n\nThis test validates the negative modification of a profile, due to a wrong formatted ID\n\n- Typically a failed response should return a `400 Bad Request` status"
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE - Blank fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response values match request values\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    const requestId = pm.variables.get(\"ID\");",
+									"    pm.expect(responseJson.id).to.not.be.null;",
+									"    pm.expect(responseJson.id).to.be.a('number');",
+									"    pm.expect(responseJson.id).to.eql(requestId);",
+									"    const date = new Date(responseJson.createdDate);",
+									"    pm.expect(date.getTime()).to.be.below(Date.now());",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/profile/{{ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"profile",
+								"{{ID}}"
+							]
+						},
+						"description": "PUT Update Profile Request\n\nThis test validates the modification of a profile accepting some optional fields that might come as empty strings, or blanks\n\n- Typically a sucessfull response should return a `200 OK` status, and a JSON response that contains at least the indicated properties\n    \n- We'll assume that name can be optional, maybe API allows anonymous users without name\n    \n- Creation date could also be a missing field that gets inserted automatically"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Valid ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"pm.test(\"Response doesn't have a body\", () => {",
+									"    pm.expect(response.json()).empty;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/posts/{{ID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{ID}}"
+							]
+						},
+						"description": "DELETE Profiles request\n\nThis test validates correct delete by ID, given a valid existing ID\n\n- No request body\n    \n- Typically a sucessfull response should return a `204 No Content` status, and no body"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Invalid ID Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", () => {",
+									"    pm.response.to.have.status(404);",
+									"    pm.expect(pm.response.text()).to.equal('Not Found');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"Request has no body\", function () {\r",
+									"    const request = pm.request.body\r",
+									"    const bodyIsEmpty = !request || !request.raw || request.raw.trim().length === 0;\r",
+									"    pm.expect(bodyIsEmpty).to.be.true;\r",
+									"    });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/posts/{{invalidID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{invalidID}}"
+							]
+						},
+						"description": "DELETE Posts request\n\nThis test validates a negative delete by ID, given an invalid ID (meaning ID has correct format but does not exist)\n\n- No request body\n    \n- Typically a failed response should return a `404 Not Found` status"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Wrong format ID Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(404);",
+									"    pm.expect(pm.response.text()).to.equal('Not Found');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/posts/{{wrongFormatID}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"posts",
+								"{{wrongFormatID}}"
+							]
+						},
+						"description": "DELETE Posts request\n\nThis test validates a negative delete by ID, given an ID that has incorrect format\n\n- No request body\n    \n- Typically a failed response should return a `400 Bad Request` status"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "base_url",
+			"value": "https://postman-rest-api-learner.glitch.me/"
+		}
+	]
+}
